@@ -1,26 +1,31 @@
 const express = require("express");
+const connectDB = require("./config/database"); // Import the database connection configuration
 const app = express(); // Create an instance of the Express application
+const User = require("./models/user");
 
-app.use("/admin", (req, res, next) => {
-  console.log("Admin route accessed");
-  const token = "xyz444";
-  const isAuthenticated = token === "xyz"; // Simulated authentication check
-  if (!isAuthenticated) {
-    return res.status(401).send("Unauthorized");
+app.use(express.json()); // Middleware to parse JSON
+
+app.post("/signup", async (req, res) => {
+  const user = new User(req.body);
+  try {
+    await user.save();
+    res.send("User created successfully");
+  } catch (error) {
+    res.status(400).send("Error creating user: " + error.message);
   }
-  next();
+
+  // user.save();
+  // res.send("User created successfully");
 });
 
-app.get("/admin/getAllUsers", (req, res) => {
-  console.log("Received request to get all users");
-  res.send("This is the response for getAllUsers");
-});
+connectDB()
+  .then(() => {
+    console.log("Database connected successfully");
 
-app.delete("/admin/deleteUser", (req, res) => {
-  console.log("Received request to delete a user");
-  res.send("This is the response for deleteUser");
-});
-
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-});
+    app.listen(3000, () => {
+      console.log("Server is running on port 3000");
+    });
+  })
+  .catch((error) => {
+    console.error("Database connection error:", error);
+  });
