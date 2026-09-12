@@ -3,9 +3,12 @@ const bcrypt = require("bcrypt");
 const connectDB = require("./config/database"); // Import the database connection configuration
 const app = express(); // Create an instance of the Express application
 const User = require("./models/user");
+const cookieParser = require("cookie-parser");
 const { validateSignupData } = require("./utils/validation");
-
+const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 app.use(express.json()); // Middleware to parse JSON
+app.use(cookieParser()); // Middleware to parse cookies
 
 app.post("/signup", async (req, res) => {
   try {
@@ -37,12 +40,27 @@ app.post("/login", async (req, res) => {
     }
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (isPasswordMatch) {
+      //create jwt token
+      const token = await jwt.sign({ userId: user._id }, "DEV@TINDER$77");
+
+      //add the token to cookie and send the response back to the user
+      res.cookie("token", token);
       res.send("Login successful");
     } else {
       throw new Error("Invalid email or password");
     }
   } catch (error) {
     res.status(400).send("Error logging in: " + error.message);
+  }
+});
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    res.send(req?.user);
+  } catch (error) {
+    {
+      res.status(401).send("Unauthorized: " + error.message);
+    }
   }
 });
 
