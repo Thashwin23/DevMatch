@@ -7,10 +7,22 @@ const authRouter = express.Router();
 
 authRouter.post("/signup", async (req, res) => {
   try {
-    // Validation of. data
+    // Validation of data
     validateSignupData(req);
-    const { firstName, lastName, emailId, password } = req.body;
-    //Encrypt the password before saving it to the database
+
+    const {
+      firstName,
+      lastName,
+      emailId,
+      password,
+      age,
+      gender,
+      photoUrl,
+      about,
+      skills,
+    } = req.body;
+
+    // Encrypt the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
@@ -18,8 +30,15 @@ authRouter.post("/signup", async (req, res) => {
       lastName,
       emailId,
       password: hashedPassword,
+      age,
+      gender,
+      photoUrl,
+      about,
+      skills,
     });
+
     await user.save();
+
     res.send("User created successfully");
   } catch (error) {
     res.status(400).send("Error creating user: " + error.message);

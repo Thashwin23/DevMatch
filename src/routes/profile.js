@@ -31,4 +31,50 @@ ProfileRouter.patch("/profile/edit", userAuth, async (req, res) => {
   }
 });
 
+ProfileRouter.patch("/profile/forgotpassword", async (req, res) => {
+  try {
+    const { emailId, oldPassword, newPassword } = req.body;
+
+    // Check required fields
+    if (!emailId || !oldPassword || !newPassword) {
+      throw new Error("Email, old password and new password are required");
+    }
+
+    // Find user by email
+    const user = await User.findOne({ emailId });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Compare old password with hashed password in DB
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isPasswordValid) {
+      throw new Error("Old password is incorrect");
+    }
+
+    // Validate new password
+    if (!validator.isStrongPassword(newPassword)) {
+      throw new Error(
+        "New password must contain at least 1 uppercase, 1 lowercase, 1 number and 1 special character",
+      );
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    user.password = hashedPassword;
+
+    await user.save();
+
+    res.json({
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    res.status(400).send("Error updating password: " + error.message);
+  }
+});
+
 module.exports = ProfileRouter;

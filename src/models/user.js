@@ -67,29 +67,60 @@ const userSchema = new mongoose.Schema(
       },
     },
 
-    // age: {
-    //   type: Number,
-    //   required: [true, "Age is required"],
-    //   min: [18, "Age must be at least 18"],
-    //   max: [100, "Age cannot be more than 100"],
-    //   validate: {
-    //     validator: function (value) {
-    //       return Number.isInteger(value);
-    //     },
-    //     message: "Age must be a whole number",
-    //   },
-    // },
+    age: {
+      type: Number,
+      required: [true, "Age is required"],
+      min: [18, "Age must be at least 18"],
+      max: [100, "Age cannot be more than 100"],
+      validate: {
+        validator: function (value) {
+          return Number.isInteger(value);
+        },
+        message: "Age must be a whole number",
+      },
+    },
 
-    // gender: {
-    //   type: String,
-    //   required: [true, "Gender is required"],
-    //   trim: true,
-    //   lowercase: true,
-    //   enum: {
-    //     values: ["male", "female", "other"],
-    //     message: "Gender must be male, female, or other",
-    //   },
-    // },
+    gender: {
+      type: String,
+      required: [true, "Gender is required"],
+      trim: true,
+      lowercase: true,
+      enum: {
+        values: ["male", "female", "other"],
+        message: "Gender must be male, female, or other",
+      },
+    },
+
+    photoUrl: {
+      type: String,
+    trim: true,
+      validate: {
+        validator: function (value) {
+          return validator.isURL(value, {
+            protocols: ["http", "https"],
+            require_protocol: true,
+          });
+        },
+        message: "Please enter a valid photo URL",
+      },
+    },
+
+    about: {
+      type: String,
+      trim: true,
+      maxlength: [500, "About cannot exceed 500 characters"],
+      default: "",
+    },
+
+    skills: {
+      type: [String],
+      validate: {
+        validator: function (skills) {
+          return skills.length <= 20;
+        },
+        message: "You can add a maximum of 20 skills",
+      },
+    },
   },
   {
     timestamps: true,
