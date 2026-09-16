@@ -25,6 +25,5 @@
 =GET /user/request/recieved
 -GET /user/feed - gets you the profiles of other uses on platform
 
-## topics to study
-
+## topics to study       
 -indexes, compound indexes, schema methods, .pre , $or and $and query

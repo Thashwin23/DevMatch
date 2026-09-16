@@ -18,7 +18,6 @@ const userSchema = new mongoose.Schema(
         message: "First name can contain only alphabets",
       },
     },
-
     lastName: {
       type: String,
       required: [true, "Last name is required"],
@@ -93,7 +92,7 @@ const userSchema = new mongoose.Schema(
 
     photoUrl: {
       type: String,
-    trim: true,
+      trim: true,
       validate: {
         validator: function (value) {
           return validator.isURL(value, {
