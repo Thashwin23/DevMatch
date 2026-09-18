@@ -17,7 +17,7 @@ ProfileRouter.patch("/profile/edit", userAuth, async (req, res) => {
   try {
     if (!validateEditProfileData(req)) {
       throw new Error(
-        "Invalid updates! Only firstName, lastName, emailId, and password can be updated",
+        "Invalid updates! ",
       );
     }
     const loggedInUser = req.user;
